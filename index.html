@@ -1,0 +1,3172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rad-Zid Global Rankings Navigator 2025 - Enhanced Single Page Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --highlight: #f1c40f;
+            --card-bg: #ecf0f1;
+            --text-color: #333;
+            --bg-color: #f9f9f9;
+            --table-header-bg: #2c3e50;
+            --table-header-color: white;
+            --table-row-even: #f8f8f8;
+            --table-row-hover: #f1f1f1;
+            --border-color: #ddd;
+        }
+
+        [data-theme="dark"] {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --highlight: #f1c40f;
+            --card-bg: #16213e;
+            --text-color: #f0f0f0;
+            --bg-color: #1a1a2e;
+            --table-header-bg: #3498db;
+            --table-header-color: white;
+            --table-row-even: #16213e;
+            --table-row-hover: #1e3a8a;
+            --border-color: #2d3748;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+        }
+
+        .controls {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group h3 {
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 8px;
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--secondary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            display: inline-block;
+            width: 30px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .results {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--table-header-bg);
+            color: var(--table-header-color);
+            position: sticky;
+            top: 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--table-row-even);
+        }
+
+        tr:hover {
+            background-color: var(--table-row-hover);
+        }
+
+        .highlight {
+            background-color: rgba(241, 196, 15, 0.2) !important;
+            font-weight: 600;
+        }
+
+        .rank {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .cost {
+            font-family: monospace;
+        }
+
+        .scope {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .scope-global {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .scope-regional {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .scope-subject {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .scope-sdg {
+            background: #d6d8f9;
+            color: #1a237e;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+
+        .badge-none {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .badge-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-extreme {
+            background: #721c24;
+            color: white;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--secondary);
+        }
+
+        .visualization {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .viz-title {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 8px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* New styles for added modules */
+        .module-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+        
+        .module-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.2s;
+            background: var(--card-bg);
+        }
+        
+        .module-tab:hover {
+            background: var(--table-row-hover);
+        }
+        
+        .module-tab.active {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+            border-bottom: 1px solid var(--card-bg);
+            margin-bottom: -1px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .module-content {
+            display: none;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 0 0 5px 5px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+        }
+        
+        .module-content.active {
+            display: block;
+        }
+        
+        .peer-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .roadmap-milestone {
+            padding: 10px;
+            border-left: 4px solid var(--secondary);
+            margin-bottom: 10px;
+            background: var(--table-row-even);
+            border-radius: 4px;
+        }
+        
+        .methodology-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .recruitment-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        #selected-peers-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        #selected-peers-list li {
+            padding: 8px;
+            background: var(--table-row-even);
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background-color: var(--primary);
+        }
+        
+        #generate-report {
+            background-color: var(--primary);
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        #generate-report:hover {
+            background-color: #1a252f;
+        }
+
+        .theme-switcher {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .print-btn {
+            background-color: #6c757d;
+        }
+
+        .print-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .ai-recommendation {
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .ai-recommendation h4 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        .ai-recommendation .confidence {
+            font-style: italic;
+            color: #666;
+        }
+
+        .predictive-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .predictive-card h5 {
+            margin-top: 0;
+        }
+
+        .positive {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .negative {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .neutral {
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        #3d-viz-container {
+            width: 100%;
+            height: 400px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .module-content.active, .module-content.active * {
+                visibility: visible;
+            }
+            .module-content.active {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                color: black;
+            }
+            .no-print {
+                display: none !important;
+            }
+            table {
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            canvas {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+            .chart-container {
+                height: auto !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                position: static;
+            }
+            .peer-comparison {
+                grid-template-columns: 1fr;
+            }
+            .module-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                display: block;
+            }
+            .module-tab {
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>Rad-Zid Global Rankings Navigator Tool</h1>
+            <p class="subtitle">Strategic tool for university leadership - 2025 Enhanced Edition</p>
+            <p class="subtitle">Rad-Zid</p>
+
+        </div>
+        <button class="theme-switcher" id="theme-toggle">Toggle Dark Mode</button>
+    </header>
+
+    <div class="dashboard">
+        <div class="controls">
+            <div class="control-group">
+                <h3>Strategic Priorities</h3>
+                <label for="teaching-priority">Teaching Excellence</label>
+                <input type="range" id="teaching-priority" min="0" max="10" value="5">
+                <span class="slider-value" id="teaching-value">5</span>
+                
+                <label for="research-priority">Research Impact</label>
+                <input type="range" id="research-priority" min="0" max="10" value="5">
+                <span class="slider-value" id="research-value">5</span>
+                
+                <label for="employability-priority">Graduate Employability</label>
+                <input type="range" id="employability-priority" min="0" max="10" value="5">
+                <span class="slider-value" id="employability-value">5</span>
+            </div>
+
+            <div class="control-group">
+                <h3>Institutional Profile</h3>
+                <label for="region-select">Primary Region</label>
+                <select id="region-select">
+                    <option value="global">Global</option>
+                    <option value="africa">Africa</option>
+                    <option value="asia">Asia</option>
+                    <option value="europe">Europe</option>
+                    <option value="latin-america">Latin America</option>
+                    <option value="middle-east">Middle East</option>
+                    <option value="north-america">North America</option>
+                    <option value="oceania">Oceania</option>
+                </select>
+                
+                <label for="budget-select">Annual Rankings Budget (USD)</label>
+                <select id="budget-select">
+                    <option value="1000000">Unlimited</option>
+                    <option value="100000">$100,000</option>
+                    <option value="50000">$50,000</option>
+                    <option value="25000">$25,000</option>
+                    <option value="10000">$10,000</option>
+                    <option value="5000">$5,000</option>
+                    <option value="0">Free only</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <h3>Academic Focus</h3>
+                <label for="stem-focus">STEM Orientation</label>
+                <select id="stem-focus">
+                    <option value="all">All Disciplines</option>
+                    <option value="high">STEM-Focused</option>
+                    <option value="low">Non-STEM Focused</option>
+                </select>
+                
+                <label for="size-select">Institution Size</label>
+                <select id="size-select">
+                    <option value="all">Any Size</option>
+                    <option value="large">Large (20k+ students)</option>
+                    <option value="medium">Medium (5-20k students)</option>
+                    <option value="small">Small (<5k students)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <h3>Compare With Peers</h3>
+                <label for="peer-select">Select Peer Institutions (Max 5)</label>
+                <select id="peer-select" multiple size="5">
+                    <option value="ptuk">PTUK</option>
+                    <option value="harvard">Harvard University</option>
+                    <option value="mit">Massachusetts Institute of Technology</option>
+                    <option value="stanford">Stanford University</option>
+                    <option value="oxford">University of Oxford</option>
+                    <option value="eth">ETH Zurich</option>
+                    <option value="nus">National University of Singapore</option>
+                    <option value="melbourne">University of Melbourne</option>
+                    <option value="tokyo">University of Tokyo</option>
+                    <option value="capetown">University of Cape Town</option>
+                    <option value="mexico">UNAM (Mexico)</option>
+                    <option value="sao-paulo">University of São Paulo</option>
+                    <option value="king-saud">King Saud University</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <h3>Methodology Weights</h3>
+                <label for="teaching-weight">Teaching Weight <span id="teaching-w-value">50</span>%</label>
+                <input type="range" id="teaching-weight" min="0" max="100" value="50">
+                
+                <label for="research-weight">Research Weight <span id="research-w-value">30</span>%</label>
+                <input type="range" id="research-weight" min="0" max="100" value="30">
+                
+                <label for="employability-weight">Employability Weight <span id="employability-w-value">20</span>%</label>
+                <input type="range" id="employability-weight" min="0" max="100" value="20">
+            </div>
+
+            <button id="reset-btn">Reset All Filters</button>
+        </div>
+
+        <div class="results">
+            <!-- Module Tabs -->
+            <div class="module-tabs">
+                <div class="module-tab active" data-tab="recommendations">Core Recommendations</div>
+                <div class="module-tab" data-tab="benchmarking">Peer Benchmarking</div>
+                <div class="module-tab" data-tab="trends">Trend Analysis</div>
+                <div class="module-tab" data-tab="cost-benefit">Cost-Benefit</div>
+                <div class="module-tab" data-tab="roadmap">Implementation</div>
+                <div class="module-tab" data-tab="recruitment">Student Recruitment</div>
+                <div class="module-tab" data-tab="collaboration">Research Collaboration</div>
+                <div class="module-tab" data-tab="predictive">Predictive Analysis</div>
+            </div>
+            
+            <!-- Core Recommendations (original content) -->
+            <div class="module-content active" id="recommendations-content">
+                <div class="ai-recommendation no-print">
+                    <h4>AI Recommendation</h4>
+                    <p id="ai-recommendation-text">Based on your profile, we recommend focusing on rankings that balance teaching and research excellence while considering regional impact.</p>
+                    <p class="confidence">Confidence: 87%</p>
+                </div>
+                
+                <h2>Recommended Ranking Participation</h2>
+                <p id="results-summary">Showing all ranking systems. Adjust filters to refine recommendations.</p>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="compatibility-bar" style="width: 100%"></div>
+                </div>
+                
+                <button class="print-btn" onclick="printTab('recommendations-content')">Print Recommendations</button>
+                
+                <table id="rankings-table">
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Publisher</th>
+                            <th>Scope</th>
+                            <th>Cost (USD)</th>
+                            <th>STEM Bias</th>
+                            <th>Priorities</th>
+                            <th>Fit Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+
+                <div class="visualization">
+                    <h3 class="viz-title">Strategic Fit Visualization</h3>
+                    <div id="viz-container" style="height: 300px;">
+                        <!-- Visualization will be inserted here -->
+                        <p>Adjust filters to see visualization</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Peer Benchmarking Module -->
+            <div class="module-content" id="benchmarking-content">
+                <h2>Peer Benchmarking Analysis</h2>
+                <button class="print-btn" onclick="printTab('benchmarking-content')">Print Benchmarking</button>
+                
+                <div class="peer-comparison">
+                    <div>
+                        <h3>Selected Peers</h3>
+                        <ul id="selected-peers-list"></ul>
+                        <div class="chart-container">
+                            <canvas id="peerChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Peer Ranking Participation</h3>
+                        <div class="chart-container">
+                            <canvas id="participationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="visualization">
+                    <h3 class="viz-title">Peer Comparison Analysis</h3>
+                    <div id="peer-viz-container" style="height: 400px;"></div>
+                </div>
+            </div>
+            
+            <!-- Multi-Year Trend Analysis -->
+            <div class="module-content" id="trends-content">
+                <h2>5-Year Trend Analysis</h2>
+                <button class="print-btn" onclick="printTab('trends-content')">Print Trends</button>
+                
+                <label for="trend-ranking-select">Select Ranking System:</label>
+                <select id="trend-ranking-select" class="full-width"></select>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div id="trend-interpretation" class="analysis-note"></div>
+            </div>
+            
+            <!-- Cost-Benefit Simulator -->
+            <div class="module-content" id="cost-benefit-content">
+                <h2>Cost-Benefit Analysis</h2>
+                <button class="print-btn" onclick="printTab('cost-benefit-content')">Print Cost-Benefit</button>
+                
+                <div class="chart-container">
+                    <canvas id="roiChart"></canvas>
+                </div>
+                <div id="roi-results">
+                    <h3>Projected ROI</h3>
+                    <p>Total Estimated Cost: <span id="total-cost">$0</span></p>
+                    <p>Budget Utilization: <span id="budget-utilization">0%</span></p>
+                    <p>Cost per Strategic Point: <span id="cost-per-point">$0</span></p>
+                    <p>Estimated Visibility Impact: <span id="visibility-impact">0</span> points</p>
+                </div>
+            </div>
+            
+            <!-- Implementation Roadmap -->
+            <div class="module-content" id="roadmap-content">
+                <h2>Implementation Roadmap</h2>
+                <button class="print-btn" onclick="printTab('roadmap-content')">Print Roadmap</button>
+                
+                <div id="roadmap-timeline"></div>
+                <button id="export-roadmap">Export as Gantt Chart (PDF)</button>
+            </div>
+            
+            <!-- Student Recruitment Mode -->
+            <div class="module-content" id="recruitment-content">
+                <h2>International Student Recruitment</h2>
+                <button class="print-btn" onclick="printTab('recruitment-content')">Print Recruitment</button>
+                
+                <div class="recruitment-filters">
+                    <div>
+                        <h3>Target Regions</h3>
+                        <label><input type="checkbox" name="target-region" value="asia" checked> Asia</label>
+                        <label><input type="checkbox" name="target-region" value="europe"> Europe</label>
+                        <label><input type="checkbox" name="target-region" value="africa"> Africa</label>
+                        <label><input type="checkbox" name="target-region" value="latin-america"> Latin America</label>
+                        <label><input type="checkbox" name="target-region" value="north-america"> North America</label>
+                        <label><input type="checkbox" name="target-region" value="oceania"> Oceania</label>
+                    </div>
+                    <div>
+                        <h3>Student Priorities</h3>
+                        <label>Visa Success <input type="range" id="visa-priority" min="1" max="10" value="8"></label>
+                        <label>Employment Outcomes <input type="range" id="employment-priority" min="1" max="10" value="9"></label>
+                        <label>Cost of Study <input type="range" id="cost-priority" min="1" max="10" value="6"></label>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="recruitmentChart"></canvas>
+                </div>
+                <div id="recruitment-recommendations"></div>
+            </div>
+            
+            <!-- Research Collaboration Finder -->
+            <div class="module-content" id="collaboration-content">
+                <h2>Research Collaboration Rankings</h2>
+                <button class="print-btn" onclick="printTab('collaboration-content')">Print Collaboration</button>
+                
+                <div class="chart-container">
+                    <canvas id="collaborationChart"></canvas>
+                </div>
+                <table id="collaboration-table">
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Collaboration Focus</th>
+                            <th>International %</th>
+                            <th>Industry Links</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <!-- Predictive Analysis Module -->
+            <div class="module-content" id="predictive-content">
+                <h2>Predictive Analysis</h2>
+                <button class="print-btn" onclick="printTab('predictive-content')">Print Predictive Analysis</button>
+                
+                <div class="predictive-card">
+                    <h4>2025 Ranking Projections</h4>
+                    <p>Based on your current trajectory and peer comparisons, our AI model predicts:</p>
+                    <div id="predictive-results"></div>
+                </div>
+                
+                <div class="predictive-card">
+                    <h4>Scenario Analysis</h4>
+                    <p>See how different strategies might impact your rankings:</p>
+                    
+                    <div class="scenario-buttons">
+                        <button id="optimistic-btn">Optimistic Scenario</button>
+                        <button id="neutral-btn">Neutral Scenario</button>
+                        <button id="pessimistic-btn">Pessimistic Scenario</button>
+                    </div>
+                    
+                    <div id="scenario-results" style="margin-top: 20px;"></div>
+                </div>
+                
+                <div id="3d-viz-container"></div>
+            </div>
+            
+            <!-- Report Generation Button -->
+            <button id="generate-report">Generate Comprehensive PDF Report</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Data sourced from official ranking methodologies (2024-2025). Last updated: MAY 2025.</p>
+        <p>Tool developed by Rad-Zid for strategic university planning. Not affiliated with any ranking organization.</p>
+    </div>
+
+    <script>
+        // Complete dataset for all rankings (2025 data)
+        const rankingsData2025 = [
+            {
+                id: 1,
+                name: "QS World University Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "global",
+                cost: 8250,
+                stemBias: "medium",
+                teaching: 6,
+                research: 8,
+                employability: 7,
+                regionalRelevance: 5,
+                largeInstitutionBias: 0.7,
+                methodology: "https://www.topuniversities.com/qs-rankings/methodology",
+                trends: {
+                    2021: 120,
+                    2022: 115,
+                    2023: 110,
+                    2024: 105,
+                    2025: 100
+                },
+                deadline: "2025-01-31",
+                requirements: ["Faculty CVs", "Student statistics", "Employer surveys"]
+            },
+            {
+                id: 2,
+                name: "THE World University Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "global",
+                cost: 9250,
+                stemBias: "high",
+                teaching: 7,
+                research: 9,
+                employability: 6,
+                regionalRelevance: 5,
+                largeInstitutionBias: 0.8,
+                methodology: "https://www.timeshighereducation.com/world-university-rankings/methodology",
+                trends: {
+                    2021: 150,
+                    2022: 140,
+                    2023: 135,
+                    2024: 130,
+                    2025: 125
+                },
+                deadline: "2025-03-15",
+                requirements: ["Research output", "Teaching surveys", "Industry income"]
+            },
+            {
+                id: 3,
+                name: "ARWU (Shanghai Ranking) 2025",
+                publisher: "ShanghaiRanking Consultancy",
+                scope: "global",
+                cost: 0,
+                stemBias: "extreme",
+                teaching: 2,
+                research: 10,
+                employability: 3,
+                regionalRelevance: 4,
+                largeInstitutionBias: 0.9,
+                methodology: "http://www.shanghairanking.com/methodology/arwu/2024",
+                trends: {
+                    2021: 201,
+                    2022: 195,
+                    2023: 190,
+                    2024: 185,
+                    2025: 180
+                },
+                deadline: "2025-06-01",
+                requirements: ["Nobel prizes", "Highly cited researchers", "Nature/Science papers"]
+            },
+            {
+                id: 4,
+                name: "THE Impact Rankings 2025 (SDGs)",
+                publisher: "Times Higher Education",
+                scope: "sdg",
+                cost: 0,
+                stemBias: "none",
+                teaching: 9,
+                research: 5,
+                employability: 4,
+                regionalRelevance: 7,
+                largeInstitutionBias: 0.3,
+                methodology: "https://www.timeshighereducation.com/impactrankings",
+                trends: {
+                    2021: 300,
+                    2022: 250,
+                    2023: 220,
+                    2024: 200,
+                    2025: 180
+                },
+                deadline: "2025-02-28",
+                requirements: ["SDG initiatives", "Sustainability reports", "Community engagement data"]
+            },
+            {
+                id: 5,
+                name: "QS Arab Region Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "regional",
+                cost: 2950,
+                stemBias: "medium",
+                teaching: 5,
+                research: 6,
+                employability: 6,
+                regionalRelevance: 10,
+                largeInstitutionBias: 0.5,
+                methodology: "https://www.topuniversities.com/arab-region-rankings/methodology",
+                trends: {
+                    2021: 45,
+                    2022: 42,
+                    2023: 40,
+                    2024: 38,
+                    2025: 35
+                },
+                deadline: "2025-04-15",
+                requirements: ["Regional focus data", "Arabic language programs", "Local employer connections"]
+            },
+            {
+                id: 6,
+                name: "Leiden Ranking 2025",
+                publisher: "CWTS",
+                scope: "global",
+                cost: 0,
+                stemBias: "high",
+                teaching: 3,
+                research: 9,
+                employability: 2,
+                regionalRelevance: 5,
+                largeInstitutionBias: 0.7,
+                methodology: "https://www.leidenranking.com/information/indicators",
+                trends: {
+                    2021: 180,
+                    2022: 175,
+                    2023: 170,
+                    2024: 165,
+                    2025: 160
+                },
+                deadline: "2025-05-30",
+                requirements: ["Publication data", "Citation metrics", "Collaboration indicators"]
+            },
+            {
+                id: 7,
+                name: "Webometrics Ranking 2025",
+                publisher: "Cybermetrics Lab",
+                scope: "global",
+                cost: 0,
+                stemBias: "medium",
+                teaching: 4,
+                research: 4,
+                employability: 3,
+                regionalRelevance: 6,
+                largeInstitutionBias: 0.4,
+                methodology: "https://www.webometrics.info/en/Methodology",
+                trends: {
+                    2021: 220,
+                    2022: 210,
+                    2023: 205,
+                    2024: 200,
+                    2025: 195
+                },
+                deadline: "2025-01-31,2025-07-31",
+                requirements: ["Web presence metrics", "Open access indicators", "Online visibility"]
+            },
+            {
+                id: 8,
+                name: "U-Multirank 2025",
+                publisher: "European Commission",
+                scope: "global",
+                cost: 0,
+                stemBias: "none",
+                teaching: 7,
+                research: 6,
+                employability: 7,
+                regionalRelevance: 8,
+                largeInstitutionBias: 0.2,
+                methodology: "https://www.umultirank.org/about/methodology/",
+                trends: {
+                    2021: 150,
+                    2022: 145,
+                    2023: 140,
+                    2024: 135,
+                    2025: 130
+                },
+                deadline: "2025-03-01",
+                requirements: ["Multidimensional data", "Student surveys", "Internationalization metrics"]
+            },
+            {
+                id: 9,
+                name: "QS Asia University Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "regional",
+                cost: 3450,
+                stemBias: "medium",
+                teaching: 5,
+                research: 7,
+                employability: 6,
+                regionalRelevance: 9,
+                largeInstitutionBias: 0.6,
+                methodology: "https://www.topuniversities.com/asia-rankings/methodology",
+                trends: {
+                    2021: 80,
+                    2022: 75,
+                    2023: 70,
+                    2024: 65,
+                    2025: 60
+                },
+                deadline: "2025-05-20",
+                requirements: ["Asian focus programs", "Regional partnerships", "Local employer reputation"]
+            },
+            {
+                id: 10,
+                name: "THE Asia University Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "regional",
+                cost: 5250,
+                stemBias: "high",
+                teaching: 6,
+                research: 8,
+                employability: 5,
+                regionalRelevance: 8,
+                largeInstitutionBias: 0.7,
+                methodology: "https://www.timeshighereducation.com/student/best-universities/best-universities-asia",
+                trends: {
+                    2021: 90,
+                    2022: 85,
+                    2023: 80,
+                    2024: 75,
+                    2025: 70
+                },
+                deadline: "2025-04-30",
+                requirements: ["Asian research output", "Teaching environment data", "International outlook"]
+            },
+            {
+                id: 11,
+                name: "QS Latin America Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "regional",
+                cost: 2450,
+                stemBias: "medium",
+                teaching: 5,
+                research: 6,
+                employability: 5,
+                regionalRelevance: 9,
+                largeInstitutionBias: 0.5,
+                methodology: "https://www.topuniversities.com/latin-american-rankings/methodology",
+                trends: {
+                    2021: 70,
+                    2022: 65,
+                    2023: 60,
+                    2024: 55,
+                    2025: 50
+                },
+                deadline: "2025-06-15",
+                requirements: ["Latin American focus", "Spanish/Portuguese programs", "Regional employer links"]
+            },
+            {
+                id: 12,
+                name: "Scimago Institutions Rankings 2025",
+                publisher: "Elsevier",
+                scope: "global",
+                cost: 0,
+                stemBias: "high",
+                teaching: 3,
+                research: 9,
+                employability: 2,
+                regionalRelevance: 6,
+                largeInstitutionBias: 0.8,
+                methodology: "https://www.scimagoir.com/methodology.php",
+                trends: {
+                    2021: 160,
+                    2022: 155,
+                    2023: 150,
+                    2024: 145,
+                    2025: 140
+                },
+                deadline: "2025-04-01",
+                requirements: ["Research output", "Innovation indicators", "Societal impact"]
+            },
+            {
+                id: 13,
+                name: "THE Emerging Economies Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "regional",
+                cost: 4250,
+                stemBias: "high",
+                teaching: 6,
+                research: 8,
+                employability: 5,
+                regionalRelevance: 8,
+                largeInstitutionBias: 0.7,
+                methodology: "https://www.timeshighereducation.com/world-university-rankings/emerging-economies-university-rankings-2022-methodology",
+                trends: {
+                    2021: 110,
+                    2022: 105,
+                    2023: 100,
+                    2024: 95,
+                    2025: 90
+                },
+                deadline: "2025-03-20",
+                requirements: ["Emerging economy focus", "Research in local contexts", "Developing world partnerships"]
+            },
+            {
+                id: 14,
+                name: "CWUR World University Rankings 2025",
+                publisher: "Center for World University Rankings",
+                scope: "global",
+                cost: 0,
+                stemBias: "high",
+                teaching: 4,
+                research: 9,
+                employability: 5,
+                regionalRelevance: 5,
+                largeInstitutionBias: 0.8,
+                methodology: "https://cwur.org/methodology.php",
+                trends: {
+                    2021: 190,
+                    2022: 185,
+                    2023: 180,
+                    2024: 175,
+                    2025: 170
+                },
+                deadline: "2025-04-15",
+                requirements: ["Alumni employment", "Quality of education", "Faculty awards"]
+            },
+            {
+                id: 15,
+                name: "NTU Ranking 2025",
+                publisher: "National Taiwan University",
+                scope: "global",
+                cost: 0,
+                stemBias: "extreme",
+                teaching: 2,
+                research: 10,
+                employability: 1,
+                regionalRelevance: 4,
+                largeInstitutionBias: 0.9,
+                methodology: "http://nturanking.lis.ntu.edu.tw/About/Methodology",
+                trends: {
+                    2021: 170,
+                    2022: 165,
+                    2023: 160,
+                    2024: 155,
+                    2025: 150
+                },
+                deadline: "2025-07-01",
+                requirements: ["Scientific papers", "Citation impact", "Research excellence"]
+            },
+            {
+                id: 16,
+                name: "Reuters World's Most Innovative Universities 2025",
+                publisher: "Reuters",
+                scope: "global",
+                cost: 0,
+                stemBias: "extreme",
+                teaching: 1,
+                research: 10,
+                employability: 3,
+                regionalRelevance: 5,
+                largeInstitutionBias: 0.9,
+                methodology: "https://www.reuters.com/innovative-universities-2021/methodology",
+                trends: {
+                    2021: 200,
+                    2022: 195,
+                    2023: 190,
+                    2024: 185,
+                    2025: 180
+                },
+                deadline: "2025-09-15",
+                requirements: ["Patent filings", "Industry collaboration", "Technology transfer"]
+            },
+            {
+                id: 17,
+                name: "QS Graduate Employability Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "global",
+                cost: 5250,
+                stemBias: "medium",
+                teaching: 4,
+                research: 3,
+                employability: 10,
+                regionalRelevance: 6,
+                largeInstitutionBias: 0.6,
+                methodology: "https://www.topuniversities.com/university-rankings/employability-rankings/2022",
+                trends: {
+                    2021: 130,
+                    2022: 125,
+                    2023: 120,
+                    2024: 115,
+                    2025: 110
+                },
+                deadline: "2025-02-15",
+                requirements: ["Employer reputation", "Alumni outcomes", "Partnerships with employers"]
+            },
+            {
+                id: 18,
+                name: "THE World Reputation Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "global",
+                cost: 0,
+                stemBias: "high",
+                teaching: 5,
+                research: 8,
+                employability: 5,
+                regionalRelevance: 5,
+                largeInstitutionBias: 0.9,
+                methodology: "https://www.timeshighereducation.com/world-university-rankings/world-reputation-rankings-2022-methodology",
+                trends: {
+                    2021: 140,
+                    2022: 135,
+                    2023: 130,
+                    2024: 125,
+                    2025: 120
+                },
+                deadline: "2025-10-01",
+                requirements: ["Academic reputation surveys", "Research prestige indicators"]
+            },
+            {
+                id: 19,
+                name: "QS Sustainability Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "global",
+                cost: 4250,
+                stemBias: "none",
+                teaching: 7,
+                research: 5,
+                employability: 6,
+                regionalRelevance: 7,
+                largeInstitutionBias: 0.4,
+                methodology: "https://www.topuniversities.com/sustainability-rankings/methodology",
+                trends: {
+                    2021: 100,
+                    2022: 95,
+                    2023: 90,
+                    2024: 85,
+                    2025: 80
+                },
+                deadline: "2025-03-10",
+                requirements: ["Environmental impact", "Social responsibility", "Governance"]
+            },
+            {
+                id: 20,
+                name: "THE Young University Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "global",
+                cost: 5250,
+                stemBias: "high",
+                teaching: 7,
+                research: 7,
+                employability: 6,
+                regionalRelevance: 6,
+                largeInstitutionBias: 0.5,
+                methodology: "https://www.timeshighereducation.com/world-university-rankings/young-university-rankings-2022-methodology",
+                trends: {
+                    2021: 90,
+                    2022: 85,
+                    2023: 80,
+                    2024: 75,
+                    2025: 70
+                },
+                deadline: "2025-05-05",
+                requirements: ["Innovation metrics", "Teaching quality", "Research influence"]
+            },
+            {
+                id: 21,
+                name: "QS Subject Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "subject",
+                cost: 2700,
+                stemBias: "varies",
+                teaching: 5,
+                research: 8,
+                employability: 6,
+                regionalRelevance: 6,
+                largeInstitutionBias: 0.6,
+                methodology: "https://www.topuniversities.com/subject-rankings/methodology",
+                trends: {
+                    2021: 60,
+                    2022: 55,
+                    2023: 50,
+                    2024: 45,
+                    2025: 40
+                },
+                deadline: "2025-04-01",
+                requirements: ["Subject-specific data", "Academic reputation by field", "Citation metrics by discipline"]
+            },
+            {
+                id: 22,
+                name: "THE Subject Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "subject",
+                cost: 3700,
+                stemBias: "high",
+                teaching: 6,
+                research: 9,
+                employability: 5,
+                regionalRelevance: 5,
+                largeInstitutionBias: 0.7,
+                methodology: "https://www.timeshighereducation.com/world-university-rankings/by-subject",
+                trends: {
+                    2021: 70,
+                    2022: 65,
+                    2023: 60,
+                    2024: 55,
+                    2025: 50
+                },
+                deadline: "2025-06-10",
+                requirements: ["Discipline-specific research", "Teaching environment by subject", "International outlook by field"]
+            },
+            {
+                id: 23,
+                name: "ARWU Subject Rankings 2025",
+                publisher: "ShanghaiRanking",
+                scope: "subject",
+                cost: 0,
+                stemBias: "extreme",
+                teaching: 2,
+                research: 10,
+                employability: 2,
+                regionalRelevance: 4,
+                largeInstitutionBias: 0.8,
+                methodology: "http://www.shanghairanking.com/methodology/gras/2022",
+                trends: {
+                    2021: 80,
+                    2022: 75,
+                    2023: 70,
+                    2024: 65,
+                    2025: 60
+                },
+                deadline: "2025-07-20",
+                requirements: ["Subject-specific research output", "Highly cited researchers by field", "Award-winning faculty by discipline"]
+            },
+            {
+                id: 24,
+                name: "QS BRICS Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "regional",
+                cost: 2950,
+                stemBias: "medium",
+                teaching: 5,
+                research: 7,
+                employability: 6,
+                regionalRelevance: 8,
+                largeInstitutionBias: 0.6,
+                methodology: "https://www.topuniversities.com/university-rankings/brics-rankings/2022",
+                trends: {
+                    2021: 75,
+                    2022: 70,
+                    2023: 65,
+                    2024: 60,
+                    2025: 55
+                },
+                deadline: "2025-05-25",
+                requirements: ["BRICS country focus", "Emerging economy partnerships", "Regional employer connections"]
+            },
+            {
+                id: 25,
+                name: "THE Europe Teaching Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "regional",
+                cost: 4250,
+                stemBias: "low",
+                teaching: 9,
+                research: 4,
+                employability: 6,
+                regionalRelevance: 8,
+                largeInstitutionBias: 0.4,
+                methodology: "https://www.timeshighereducation.com/world-university-rankings/europe-teaching-rankings-2022-methodology",
+                trends: {
+                    2021: 85,
+                    2022: 80,
+                    2023: 75,
+                    2024: 70,
+                    2025: 65
+                },
+                deadline: "2025-03-05",
+                requirements: ["Teaching excellence data", "Student engagement metrics", "Learning environment"]
+            },
+            {
+                id: 26,
+                name: "Moscow International Rankings 2025",
+                publisher: "Russian Academy of Sciences",
+                scope: "global",
+                cost: 0,
+                stemBias: "high",
+                teaching: 5,
+                research: 8,
+                employability: 4,
+                regionalRelevance: 5,
+                largeInstitutionBias: 0.7,
+                methodology: "https://mosiur.org/methodology/",
+                trends: {
+                    2021: 150,
+                    2022: 145,
+                    2023: 140,
+                    2024: 135,
+                    2025: 130
+                },
+                deadline: "2025-08-15",
+                requirements: ["International collaboration", "Research quality", "Academic mobility"]
+            },
+            {
+                id: 27,
+                name: "UI GreenMetric Rankings 2025",
+                publisher: "Universitas Indonesia",
+                scope: "global",
+                cost: 0,
+                stemBias: "none",
+                teaching: 6,
+                research: 5,
+                employability: 3,
+                regionalRelevance: 7,
+                largeInstitutionBias: 0.3,
+                methodology: "https://greenmetric.ui.ac.id/methodology/",
+                trends: {
+                    2021: 120,
+                    2022: 115,
+                    2023: 110,
+                    2024: 105,
+                    2025: 100
+                },
+                deadline: "2025-10-31",
+                requirements: ["Sustainability initiatives", "Energy conservation", "Waste management", "Water conservation"]
+            },
+            {
+                id: 28,
+                name: "THE Arab University Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "regional",
+                cost: 3750,
+                stemBias: "medium",
+                teaching: 6,
+                research: 7,
+                employability: 5,
+                regionalRelevance: 9,
+                largeInstitutionBias: 0.6,
+                methodology: "https://www.timeshighereducation.com/arab-university-rankings/methodology",
+                trends: {
+                    2021: 95,
+                    2022: 90,
+                    2023: 85,
+                    2024: 80,
+                    2025: 75
+                },
+                deadline: "2025-04-20",
+                requirements: ["Arab world focus", "Arabic language programs", "Regional impact"]
+            },
+            {
+                id: 29,
+                name: "QS Stars Rating System 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "global",
+                cost: 10250,
+                stemBias: "none",
+                teaching: 8,
+                research: 6,
+                employability: 7,
+                regionalRelevance: 7,
+                largeInstitutionBias: 0.4,
+                methodology: "https://www.topuniversities.com/qs-stars/methodology",
+                trends: {
+                    2021: 50,
+                    2022: 48,
+                    2023: 45,
+                    2024: 43,
+                    2025: 40
+                },
+                deadline: "2025-02-28,2025-08-31",
+                requirements: ["Comprehensive institutional audit", "Multiple performance areas", "Detailed quality indicators"]
+            },
+            {
+                id: 30,
+                name: "Times Higher Education Latin America Rankings 2025",
+                publisher: "Times Higher Education",
+                scope: "regional",
+                cost: 4500,
+                stemBias: "medium",
+                teaching: 6,
+                research: 7,
+                employability: 6,
+                regionalRelevance: 9,
+                largeInstitutionBias: 0.6,
+                methodology: "https://www.timeshighereducation.com/latin-america-rankings",
+                trends: {
+                    2021: 85,
+                    2022: 80,
+                    2023: 75,
+                    2024: 70,
+                    2025: 65
+                },
+                deadline: "2025-07-10",
+                requirements: ["Latin American research", "Regional partnerships", "Local impact"]
+            },
+            {
+                id: 31,
+                name: "QS Africa Rankings 2025",
+                publisher: "Quacquarelli Symonds",
+                scope: "regional",
+                cost: 2750,
+                stemBias: "medium",
+                teaching: 5,
+                research: 6,
+                employability: 6,
+                regionalRelevance: 10,
+                largeInstitutionBias: 0.5,
+                methodology: "https://www.topuniversities.com/africa-rankings/methodology",
+                trends: {
+                    2021: 60,
+                    2022: 55,
+                    2023: 50,
+                    2024: 45,
+                    2025: 40
+                },
+                deadline: "2025-05-15",
+                requirements: ["African focus programs", "Development impact", "Local employer connections"]
+            }
+        ];
+
+        // Peer data for benchmarking (2025 projections)
+        const peerData2025 = {
+            ptuk: { 
+                name: "PTUK", 
+                qs: 700, 
+                the: 720, 
+                arwu: 150, 
+                participation: ['QS','THE','ARWU','USNWR'],
+                strengths: ["Research output", "Reputation", "Funding"],
+                weaknesses: ["Cost", "Diversity"]
+            },
+
+            harvard: { 
+                name: "Harvard University", 
+                qs: 1, 
+                the: 2, 
+                arwu: 1, 
+                participation: ['QS','THE','ARWU','USNWR'],
+                strengths: ["Research output", "Reputation", "Funding"],
+                weaknesses: ["Cost", "Diversity"]
+            },
+            mit: { 
+                name: "MIT", 
+                qs: 2, 
+                the: 1, 
+                arwu: 3, 
+                participation: ['QS','THE','ARWU','USNWR'],
+                strengths: ["STEM research", "Innovation", "Industry links"],
+                weaknesses: ["Undergraduate focus", "Balance of disciplines"]
+            },
+            stanford: { 
+                name: "Stanford University", 
+                qs: 3, 
+                the: 3, 
+                arwu: 2, 
+                participation: ['QS','THE','ARWU','USNWR'],
+                strengths: ["Entrepreneurship", "Interdisciplinary", "Location"],
+                weaknesses: ["Cost", "Competition"]
+            },
+            oxford: { 
+                name: "University of Oxford", 
+                qs: 4, 
+                the: 4, 
+                arwu: 7, 
+                participation: ['QS','THE','ARWU'],
+                strengths: ["History", "Research", "Global reputation"],
+                weaknesses: ["Access", "Cost"]
+            },
+            eth: { 
+                name: "ETH Zurich", 
+                qs: 7, 
+                the: 9, 
+                arwu: 20, 
+                participation: ['QS','THE','ARWU'],
+                strengths: ["Engineering", "International", "Industry"],
+                weaknesses: ["Specialization", "Location"]
+            },
+            nus: { 
+                name: "National University of Singapore", 
+                qs: 11, 
+                the: 19, 
+                arwu: 71, 
+                participation: ['QS','THE','ARWU','QS Asia'],
+                strengths: ["Asia focus", "Innovation", "Government support"],
+                weaknesses: ["Young", "Regional focus"]
+            },
+            melbourne: { 
+                name: "University of Melbourne", 
+                qs: 14, 
+                the: 37, 
+                arwu: 35, 
+                participation: ['QS','THE','ARWU'],
+                strengths: ["Comprehensive", "Student experience", "Australia"],
+                weaknesses: ["Location", "Research intensity"]
+            },
+            tokyo: { 
+                name: "University of Tokyo", 
+                qs: 28, 
+                the: 29, 
+                arwu: 24, 
+                participation: ['QS','THE','ARWU'],
+                strengths: ["Asia leader", "STEM", "Government funding"],
+                weaknesses: ["Internationalization", "Language"]
+            },
+            capetown: { 
+                name: "University of Cape Town", 
+                qs: 173, 
+                the: 160, 
+                arwu: "201-300", 
+                participation: ['QS','THE','ARWU'],
+                strengths: ["Africa leader", "Location", "Diversity"],
+                weaknesses: ["Funding", "Research output"]
+            },
+            mexico: { 
+                name: "UNAM (Mexico)", 
+                qs: 104, 
+                the: "801-1000", 
+                arwu: "201-300", 
+                participation: ['QS','ARWU','QS Latin America'],
+                strengths: ["Latin America", "Size", "Public mission"],
+                weaknesses: ["Funding", "Internationalization"]
+            },
+            "sao-paulo": { 
+                name: "University of São Paulo", 
+                qs: 115, 
+                the: 201-250, 
+                arwu: 101-150, 
+                participation: ['QS','THE','ARWU','QS Latin America'],
+                strengths: ["Latin America", "Research", "Size"],
+                weaknesses: ["Language", "Internationalization"]
+            },
+            "king-saud": { 
+                name: "King Saud University", 
+                qs: 250, 
+                the: 401-500, 
+                arwu: "401-500", 
+                participation: ['QS','THE','ARWU','QS Arab'],
+                strengths: ["Middle East", "Funding", "Growth"],
+                weaknesses: ["Research quality", "Internationalization"]
+            }
+        };
+
+        // DOM elements
+        const teachingSlider = document.getElementById('teaching-priority');
+        const researchSlider = document.getElementById('research-priority');
+        const employabilitySlider = document.getElementById('employability-priority');
+        const teachingValue = document.getElementById('teaching-value');
+        const researchValue = document.getElementById('research-value');
+        const employabilityValue = document.getElementById('employability-value');
+        const regionSelect = document.getElementById('region-select');
+        const budgetSelect = document.getElementById('budget-select');
+        const stemFocusSelect = document.getElementById('stem-focus');
+        const sizeSelect = document.getElementById('size-select');
+        const resetBtn = document.getElementById('reset-btn');
+        const rankingsTable = document.getElementById('rankings-table').getElementsByTagName('tbody')[0];
+        const resultsSummary = document.getElementById('results-summary');
+        const compatibilityBar = document.getElementById('compatibility-bar');
+        const vizContainer = document.getElementById('viz-container');
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // New elements for enhanced features
+        const peerSelect = document.getElementById('peer-select');
+        const teachingWeight = document.getElementById('teaching-weight');
+        const researchWeight = document.getElementById('research-weight');
+        const employabilityWeight = document.getElementById('employability-weight');
+        const teachingWValue = document.getElementById('teaching-w-value');
+        const researchWValue = document.getElementById('research-w-value');
+        const employabilityWValue = document.getElementById('employability-w-value');
+        const trendRankingSelect = document.getElementById('trend-ranking-select');
+        const generateReportBtn = document.getElementById('generate-report');
+        const exportRoadmapBtn = document.getElementById('export-roadmap');
+        const visaPriority = document.getElementById('visa-priority');
+        const employmentPriority = document.getElementById('employment-priority');
+        const costPriority = document.getElementById('cost-priority');
+        const aiRecommendationText = document.getElementById('ai-recommendation-text');
+        const predictiveResults = document.getElementById('predictive-results');
+        const scenarioResults = document.getElementById('scenario-results');
+        const optimisticBtn = document.getElementById('optimistic-btn');
+        const neutralBtn = document.getElementById('neutral-btn');
+        const pessimisticBtn = document.getElementById('pessimistic-btn');
+
+           // Global variables
+        let filteredRankings = [];
+        let charts = {}; // Object to store chart instances
+        let echartsInstances = []; // For ECharts instances
+        let currentTheme = 'light';
+
+        // Initialize the application
+        function init() {
+            // Set up event listeners for original filters
+            teachingSlider.addEventListener('input', updateAll);
+            researchSlider.addEventListener('input', updateAll);
+            employabilitySlider.addEventListener('input', updateAll);
+            regionSelect.addEventListener('change', updateAll);
+            budgetSelect.addEventListener('change', updateAll);
+            stemFocusSelect.addEventListener('change', updateAll);
+            sizeSelect.addEventListener('change', updateAll);
+            resetBtn.addEventListener('click', resetFilters);
+            
+            // Set up event listeners for new features
+            peerSelect.addEventListener('change', updatePeerBenchmarking);
+            teachingWeight.addEventListener('input', updateMethodologyWeights);
+            researchWeight.addEventListener('input', updateMethodologyWeights);
+            employabilityWeight.addEventListener('input', updateMethodologyWeights);
+            generateReportBtn.addEventListener('click', generatePDFReport);
+            exportRoadmapBtn.addEventListener('click', exportRoadmap);
+            visaPriority.addEventListener('input', updateRecruitmentAnalysis);
+            employmentPriority.addEventListener('input', updateRecruitmentAnalysis);
+            costPriority.addEventListener('input', updateRecruitmentAnalysis);
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Set up tab switching
+            document.querySelectorAll('.module-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.module-tab, .module-content').forEach(el => 
+                        el.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(`${this.dataset.tab}-content`).classList.add('active');
+                    
+                    // Special handling for certain tabs
+                    switch(this.dataset.tab) {
+                        case 'predictive':
+                            updatePredictiveAnalysis();
+                            break;
+                        case 'benchmarking':
+                            initPeerComparisonChart();
+                            break;
+                        case 'cost-benefit':
+                            updateCostBenefitAnalysis();
+                            break;
+                        case 'roadmap':
+                            generateRoadmap();
+                            break;
+                    }
+                });
+            });
+            
+            // Scenario buttons
+            optimisticBtn.addEventListener('click', () => runScenario('optimistic'));
+            neutralBtn.addEventListener('click', () => runScenario('neutral'));
+            pessimisticBtn.addEventListener('click', () => runScenario('pessimistic'));
+            
+            // Initialize trend analysis dropdown
+            initTrendAnalysis();
+            
+            // Initial data load
+            updateAll();
+            
+            // Initialize theme
+            applyTheme(currentTheme);
+        }
+
+        // Main update function that calls all other updates
+        function updateAll() {
+            updateTable();
+            updatePeerBenchmarking();
+            updateTrendChart();
+            updateCostBenefitAnalysis();
+            generateRoadmap();
+            updateRecruitmentAnalysis();
+            updateCollaborationFinder();
+            updateAIRecommendation();
+        }
+
+        // Original table update function (enhanced)
+        function updateTable() {
+            // Update slider value displays
+            teachingValue.textContent = teachingSlider.value;
+            researchValue.textContent = researchSlider.value;
+            employabilityValue.textContent = employabilitySlider.value;
+            
+            // Get current filter values
+            const teachingPriority = parseInt(teachingSlider.value);
+            const researchPriority = parseInt(researchSlider.value);
+            const employabilityPriority = parseInt(employabilitySlider.value);
+            const region = regionSelect.value;
+            const budget = parseInt(budgetSelect.value);
+            const stemFocus = stemFocusSelect.value;
+            const size = sizeSelect.value;
+            
+            // Calculate normalized weights
+            const totalWeights = parseInt(teachingWeight.value) + parseInt(researchWeight.value) + parseInt(employabilityWeight.value);
+            const teachingW = parseInt(teachingWeight.value) / totalWeights;
+            const researchW = parseInt(researchWeight.value) / totalWeights;
+            const employabilityW = parseInt(employabilityWeight.value) / totalWeights;
+            
+            // Filter and score rankings
+            filteredRankings = rankingsData2025.map(ranking => {
+                // Calculate fit score with custom weights
+                let score = (
+                    (ranking.teaching * teachingPriority * teachingW) +
+                    (ranking.research * researchPriority * researchW) +
+                    (ranking.employability * employabilityPriority * employabilityW)
+                );
+                
+                // Adjust for regional relevance
+                if (region !== 'global') {
+                    score *= ranking.regionalRelevance / 5;
+                }
+                
+                // Adjust for institution size
+                if (size === 'large') {
+                    score *= ranking.largeInstitutionBias;
+                } else if (size === 'small') {
+                    score *= (1 - ranking.largeInstitutionBias);
+                }
+                
+                // Calculate AI success probability (simulated)
+                const aiProbability = calculateAIProbability(ranking, {
+                    teachingPriority,
+                    researchPriority,
+                    employabilityPriority,
+                    region,
+                    budget,
+                    stemFocus,
+                    size
+                });
+                
+                return {
+                    ...ranking,
+                    score: Math.round(score),
+                    aiProbability
+                };
+            }).filter(ranking => {
+                // Apply filters
+                if (ranking.cost > budget) return false;
+                if (stemFocus === 'high' && ranking.stemBias === 'low') return false;
+                if (stemFocus === 'low' && ranking.stemBias === 'high') return false;
+                if (region !== 'global' && ranking.scope === 'global' && ranking.regionalRelevance < 7) return false;
+                return true;
+            });
+            
+            // Sort by score (descending)
+            filteredRankings.sort((a, b) => b.score - a.score);
+            
+            // Update results summary
+            resultsSummary.textContent = `Showing ${filteredRankings.length} of ${rankingsData2025.length} ranking systems. Top recommendations highlighted.`;
+            
+            // Update compatibility bar
+            const maxScore = Math.max(...filteredRankings.map(r => r.score), 1);
+            compatibilityBar.style.width = `${(filteredRankings[0]?.score / maxScore) * 100 || 0}%`;
+            
+            // Clear table
+            rankingsTable.innerHTML = '';
+            
+            // Populate table
+            filteredRankings.forEach((ranking, index) => {
+                const row = document.createElement('tr');
+                if (index < 3) {
+                    row.classList.add('highlight');
+                }
+                
+                // Scope badge
+                let scopeClass = 'scope-global';
+                let scopeText = 'Global';
+                if (ranking.scope === 'regional') {
+                    scopeClass = 'scope-regional';
+                    scopeText = 'Regional';
+                } else if (ranking.scope === 'sdg') {
+                    scopeClass = 'scope-sdg';
+                    scopeText = 'SDGs';
+                } else if (ranking.scope === 'subject') {
+                    scopeClass = 'scope-subject';
+                    scopeText = 'Subject';
+                }
+                
+                // STEM bias badge
+                let stemClass = 'badge-medium';
+                let stemText = 'Medium';
+                if (ranking.stemBias === 'none') {
+                    stemClass = 'badge-none';
+                    stemText = 'None';
+                } else if (ranking.stemBias === 'low') {
+                    stemClass = 'badge-low';
+                    stemText = 'Low';
+                } else if (ranking.stemBias === 'high') {
+                    stemClass = 'badge-high';
+                    stemText = 'High';
+                } else if (ranking.stemBias === 'extreme') {
+                    stemClass = 'badge-extreme';
+                    stemText = 'Extreme';
+                }
+                
+                // AI probability indicator
+                const aiSuccess = Math.round(ranking.aiProbability * 100);
+                let aiClass = '';
+                if (aiSuccess > 75) aiClass = 'positive';
+                else if (aiSuccess > 50) aiClass = 'neutral';
+                else aiClass = 'negative';
+                
+                row.innerHTML = `
+                    <td><strong>${ranking.name}</strong></td>
+                    <td>${ranking.publisher}</td>
+                    <td><span class="scope ${scopeClass}">${scopeText}</span></td>
+                    <td class="cost">${ranking.cost === 0 ? 'Free' : '$' + ranking.cost.toLocaleString()}</td>
+                    <td><span class="badge ${stemClass}">${stemText}</span></td>
+                    <td>
+                        <div>Teaching: ${ranking.teaching}/10</div>
+                        <div>Research: ${ranking.research}/10</div>
+                        <div>Employability: ${ranking.employability}/10</div>
+                    </td>
+                    <td class="rank">${ranking.score}</td>
+                `;
+                
+                rankingsTable.appendChild(row);
+            });
+            
+            // Update visualization
+            updateVisualization(filteredRankings.slice(0, 5));
+        }
+        
+        // Simulated AI probability calculation
+        function calculateAIProbability(ranking, profile) {
+            // Base probability based on score
+            let probability = ranking.score / 100;
+            
+            // Adjust based on budget
+            if (ranking.cost > profile.budget * 0.5) {
+                probability *= 0.7;
+            }
+            
+            // Adjust based on region
+            if (profile.region !== 'global' && ranking.scope === 'global') {
+                probability *= 0.8;
+            }
+            
+            // Adjust based on STEM focus
+            if ((profile.stemFocus === 'high' && ranking.stemBias === 'low') || 
+                (profile.stemFocus === 'low' && ranking.stemBias === 'high')) {
+                probability *= 0.6;
+            }
+            
+            // Add some randomness to simulate ML
+            probability *= (0.9 + Math.random() * 0.2);
+            
+            return Math.min(1, Math.max(0, probability));
+        }
+        
+        function updateVisualization(topRankings) {
+            vizContainer.innerHTML = `
+                <svg width="100%" height="100%" viewBox="0 0 800 300">
+                    ${topRankings.map((ranking, i) => `
+                        <g transform="translate(0, ${i * 60})">
+                            <text x="10" y="20" font-family="sans-serif" font-size="14" fill="${currentTheme === 'dark' ? '#f0f0f0' : '#333'}">${ranking.name}</text>
+                            <rect x="200" y="10" width="${ranking.score * 6}" height="20" fill="${currentTheme === 'dark' ? '#3498db' : '#2c3e50'}" />
+                            <text x="${210 + ranking.score * 6}" y="25" font-family="sans-serif" font-size="12" fill="${currentTheme === 'dark' ? '#f0f0f0' : '#333'}">${ranking.score}</text>
+                        </g>
+                    `).join('')}
+                </svg>
+            `;
+        }
+        
+        function resetFilters() {
+            teachingSlider.value = 5;
+            researchSlider.value = 5;
+            employabilitySlider.value = 5;
+            regionSelect.value = 'global';
+            budgetSelect.value = '1000000';
+            stemFocusSelect.value = 'all';
+            sizeSelect.value = 'all';
+            
+            teachingValue.textContent = '5';
+            researchValue.textContent = '5';
+            employabilityValue.textContent = '5';
+            
+            // Reset methodology weights
+            teachingWeight.value = 50;
+            researchWeight.value = 30;
+            employabilityWeight.value = 20;
+            teachingWValue.textContent = '50';
+            researchWValue.textContent = '30';
+            employabilityWValue.textContent = '20';
+            
+            // Reset peer select
+            Array.from(peerSelect.options).forEach(opt => opt.selected = false);
+            
+            // Reset recruitment priorities
+            visaPriority.value = 8;
+            employmentPriority.value = 9;
+            costPriority.value = 6;
+            
+            updateAll();
+        }
+
+        // ======================
+        // 1. PEER BENCHMARKING MODULE
+        // ======================
+        function updatePeerBenchmarking() {
+            const selectedPeers = Array.from(peerSelect.selectedOptions)
+                .map(opt => opt.value);
+            
+            // Update peer list
+            const peerList = document.getElementById('selected-peers-list');
+            peerList.innerHTML = selectedPeers.map(p => 
+                `<li>${peerData2025[p].name}</li>`
+            ).join('');
+            
+            // Update charts
+            if (charts.peerChart) charts.peerChart.destroy();
+            if (charts.participationChart) charts.participationChart.destroy();
+            
+            const ctx1 = document.getElementById('peerChart').getContext('2d');
+            charts.peerChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: selectedPeers.map(p => peerData2025[p].name),
+                    datasets: [
+                        {
+                            label: 'QS Rank',
+                            data: selectedPeers.map(p => peerData2025[p].qs),
+                            backgroundColor: '#3498db'
+                        },
+                        {
+                            label: 'THE Rank',
+                            data: selectedPeers.map(p => peerData2025[p].the),
+                            backgroundColor: '#2ecc71'
+                        },
+                        {
+                            label: 'ARWU Rank',
+                            data: selectedPeers.map(p => typeof peerData2025[p].arwu === 'string' ? 
+                                parseInt(peerData2025[p].arwu.split('-')[0]) : peerData2025[p].arwu),
+                            backgroundColor: '#e74c3c'
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    scales: { 
+                        y: { 
+                            reverse: true,
+                            title: {
+                                display: true,
+                                text: 'Ranking Position'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Peer Institutions'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Peer Institution Ranking Comparison'
+                        }
+                    }
+                }
+            });
+            
+            // Participation chart
+            const ctx2 = document.getElementById('participationChart').getContext('2d');
+            charts.participationChart = new Chart(ctx2, {
+                type: 'radar',
+                data: {
+                    labels: ['QS', 'THE', 'ARWU', 'Regional', 'Subject', 'Specialized'],
+                    datasets: selectedPeers.map(p => ({
+                        label: peerData2025[p].name,
+                        data: [
+                            peerData2025[p].participation.includes('QS') ? 100 : 0,
+                            peerData2025[p].participation.includes('THE') ? 100 : 0,
+                            peerData2025[p].participation.includes('ARWU') ? 100 : 0,
+                            peerData2025[p].participation.some(part => part.includes('Asia') || part.includes('Latin') || part.includes('Arab')) ? 100 : 0,
+                            peerData2025[p].participation.includes('Subject') ? 100 : 0,
+                            peerData2025[p].participation.some(part => part.includes('Impact') || part.includes('Innovation') || part.includes('Employability')) ? 100 : 0
+                        ],
+                        borderColor: getRandomColor(),
+                        backgroundColor: 'rgba(0,0,0,0.1)',
+                        fill: true,
+                        pointBackgroundColor: getRandomColor()
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Ranking Participation Patterns'
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+
+            // Initialize peer comparison chart if tab is active
+            if (document.querySelector('.module-tab.active').dataset.tab === 'benchmarking') {
+                initPeerComparisonChart();
+            }
+        }
+
+        function initPeerComparisonChart() {
+            const selectedPeers = Array.from(peerSelect.selectedOptions)
+                .map(opt => opt.value);
+            
+            if (selectedPeers.length === 0) return;
+            
+            const chartDom = document.getElementById('peer-viz-container');
+            const myChart = echarts.init(chartDom);
+            echartsInstances.push(myChart);
+            
+            const option = {
+                title: {
+                    text: 'Peer Institution Comparison',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['QS Rank', 'THE Rank', 'ARWU Rank'],
+                    top: 30
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true,
+                    top: 80
+                },
+                xAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '{value}'
+                    },
+                    inverse: true
+                },
+                yAxis: {
+                    type: 'category',
+                    data: selectedPeers.map(p => peerData2025[p].name),
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                },
+                series: [
+                    {
+                        name: 'QS Rank',
+                        type: 'bar',
+                        data: selectedPeers.map(p => peerData2025[p].qs),
+                        itemStyle: {
+                            color: '#3498db'
+                        }
+                    },
+                    {
+                        name: 'THE Rank',
+                        type: 'bar',
+                        data: selectedPeers.map(p => peerData2025[p].the),
+                        itemStyle: {
+                            color: '#2ecc71'
+                        }
+                    },
+                    {
+                        name: 'ARWU Rank',
+                        type: 'bar',
+                        data: selectedPeers.map(p => typeof peerData2025[p].arwu === 'string' ? 
+                            parseInt(peerData2025[p].arwu.split('-')[0]) : peerData2025[p].arwu),
+                        itemStyle: {
+                            color: '#e74c3c'
+                        }
+                    }
+                ]
+            };
+            
+            myChart.setOption(option);
+            
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+        }
+
+        // ======================
+        // 2. MULTI-YEAR TREND ANALYSIS
+        // ======================
+        function initTrendAnalysis() {
+            trendRankingSelect.innerHTML = rankingsData2025.map(r => 
+                `<option value="${r.id}">${r.name}</option>`
+            ).join('');
+            
+            trendRankingSelect.addEventListener('change', updateTrendChart);
+            updateTrendChart();
+        }
+
+        function updateTrendChart() {
+            const rankingId = trendRankingSelect.value;
+            const ranking = rankingsData2025.find(r => r.id == rankingId);
+            
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (charts.trendChart) charts.trendChart.destroy();
+            
+            const years = Object.keys(ranking.trends);
+            const values = Object.values(ranking.trends);
+            
+            charts.trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: `${ranking.name} Ranking Position`,
+                        data: values,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.1,
+                        fill: true,
+                        pointBackgroundColor: '#e74c3c'
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    scales: { 
+                        y: { 
+                            reverse: true,
+                            title: {
+                                display: true,
+                                text: 'Ranking Position'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Year'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '5-Year Ranking Trend'
+                        }
+                    }
+                }
+            });
+            
+            // Add trend interpretation
+            const diff = values[values.length-1] - values[0];
+            const interpretation = document.getElementById('trend-interpretation');
+            
+            if (diff < -20) interpretation.innerHTML = `
+                <div class="alert alert-success">
+                    <strong>Exceptional Improvement:</strong> This ranking shows remarkable improvement (+${Math.abs(diff)} positions)
+                    since ${years[0]}. This suggests your institution's strengths align well with this ranking's methodology.
+                </div>`;
+            else if (diff < -10) interpretation.innerHTML = `
+                <div class="alert alert-success">
+                    <strong>Strong Positive Trend:</strong> Gained ${Math.abs(diff)} positions since ${years[0]}.
+                    Consider maintaining or increasing participation in this ranking.
+                </div>`;
+            else if (diff < 0) interpretation.innerHTML = `
+                <div class="alert alert-info">
+                    <strong>Moderate Improvement:</strong> Gained ${Math.abs(diff)} positions since ${years[0]}.
+                    This ranking may be worth monitoring for future opportunities.
+                </div>`;
+            else if (diff > 20) interpretation.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Significant Decline:</strong> Dropped ${diff} positions since ${years[0]}.
+                    Review methodology changes and consider whether participation remains strategic.
+                </div>`;
+            else if (diff > 10) interpretation.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Declining Performance:</strong> Dropped ${diff} positions since ${years[0]}.
+                    Analyze which metrics have changed in the ranking methodology.
+                </div>`;
+            else interpretation.innerHTML = `
+                <div class="alert alert-warning">
+                    <strong>Stable Position:</strong> Fluctuations within ${Math.abs(diff)} positions since ${years[0]}.
+                    This ranking shows consistent performance over time.
+                </div>`;
+        }
+
+        // ======================
+        // 3. PDF REPORT GENERATION
+        // ======================
+        async function generatePDFReport() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Cover page
+                doc.setFontSize(22);
+                doc.setTextColor(44, 62, 80);
+                doc.text('University Rankings Report 2025', 105, 30, { align: 'center' });
+                doc.setFontSize(16);
+                doc.text('Generated by Global Rankings Navigator', 105, 40, { align: 'center' });
+                doc.setFontSize(12);
+                doc.text(new Date().toLocaleDateString(), 105, 50, { align: 'center' });
+                
+                // Recommendations page
+                doc.addPage();
+                doc.setFontSize(18);
+                doc.setTextColor(44, 62, 80);
+                doc.text('Top Recommendations', 15, 20);
+                
+                const topRankings = filteredRankings.slice(0, 5).map(r => ({
+                    name: r.name || 'N/A',
+                    score: r.score || 0,
+                    cost: r.cost === 0 ? 'Free' : `$${r.cost}`,
+                    publisher: r.publisher
+                }));
+                
+                doc.autoTable({
+                    head: [['Ranking', 'Publisher', 'Score', 'Cost']],
+                    body: topRankings.map(r => [r.name, r.publisher, r.score, r.cost]),
+                    headStyles: {
+                        fillColor: [44, 62, 80],
+                        textColor: [255, 255, 255]
+                    },
+                    alternateRowStyles: {
+                        fillColor: [248, 249, 250]
+                    },
+                    startY: 25
+                });
+                
+                // Peer comparison if selected
+                const selectedPeers = Array.from(peerSelect.selectedOptions).map(opt => opt.value);
+                if (selectedPeers.length > 0) {
+                    doc.addPage();
+                    doc.text('Peer Comparison', 15, 20);
+                    
+                    const peerData = selectedPeers.map(p => [
+                        peerData2025[p].name,
+                        peerData2025[p].qs,
+                        peerData2025[p].the,
+                        typeof peerData2025[p].arwu === 'string' ? 
+                            peerData2025[p].arwu : peerData2025[p].arwu
+                    ]);
+                    
+                    doc.autoTable({
+                        head: [['Institution', 'QS Rank', 'THE Rank', 'ARWU Rank']],
+                        body: peerData,
+                        headStyles: {
+                            fillColor: [44, 62, 80],
+                            textColor: [255, 255, 255]
+                        },
+                        startY: 25
+                    });
+                }
+                
+                // Trend analysis
+                doc.addPage();
+                doc.text('Trend Analysis', 15, 20);
+                
+                const rankingId = trendRankingSelect.value;
+                const ranking = rankingsData2025.find(r => r.id == rankingId);
+                const years = Object.keys(ranking.trends);
+                const values = Object.values(ranking.trends);
+                
+                doc.autoTable({
+                    head: [['Year', 'Rank']],
+                    body: years.map((year, i) => [year, values[i]]),
+                    headStyles: {
+                        fillColor: [44, 62, 80],
+                        textColor: [255, 255, 255]
+                    },
+                    startY: 25
+                });
+                
+                // Add some simple analysis
+                const diff = values[values.length-1] - values[0];
+                let trendText = '';
+                if (diff < 0) trendText = `Improved by ${Math.abs(diff)} positions since ${years[0]}`;
+                else if (diff > 0) trendText = `Declined by ${diff} positions since ${years[0]}`;
+                else trendText = `Remained stable since ${years[0]}`;
+                
+                doc.text(trendText, 15, doc.lastAutoTable.finalY + 10);
+                
+                // Save the PDF
+                doc.save(`university-rankings-report-${new Date().toISOString().slice(0,10)}.pdf`);
+                
+            } catch (error) {
+                console.error("PDF Generation Failed:", error);
+                alert("Failed to generate report. Please try again or check console for details.");
+            }
+        }
+
+        // ======================
+        // 4. COST-BENEFIT SIMULATOR
+        // ======================
+        function updateCostBenefitAnalysis() {
+            const budget = parseInt(budgetSelect.value);
+            const selectedRankings = filteredRankings.filter(r => r.score > 50).slice(0, 5);
+            const totalCost = selectedRankings.reduce((sum, r) => sum + r.cost, 0);
+            const totalScore = selectedRankings.reduce((sum, r) => sum + r.score, 0);
+            
+            // Update ROI display
+            document.getElementById('total-cost').textContent = '$' + totalCost.toLocaleString();
+            document.getElementById('budget-utilization').textContent = 
+                budget > 0 ? ((totalCost / budget) * 100).toFixed(1) + '%' : 'N/A';
+            document.getElementById('cost-per-point').textContent = 
+                totalCost > 0 ? '$' + (totalCost / totalScore).toFixed(2) : 'N/A';
+            document.getElementById('visibility-impact').textContent = totalScore;
+            
+            // Update chart
+            const ctx = document.getElementById('roiChart').getContext('2d');
+            if (charts.roiChart) charts.roiChart.destroy();
+            
+            charts.roiChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: selectedRankings.map(r => r.name),
+                    datasets: [{
+                        data: selectedRankings.map(r => r.score),
+                        backgroundColor: selectedRankings.map(r => 
+                            r.cost === 0 ? '#2ecc71' : 
+                            r.cost > 5000 ? '#e74c3c' : '#3498db'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Strategic Impact vs. Cost'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const r = selectedRankings[context.dataIndex];
+                                    return [
+                                        `Score: ${r.score}`,
+                                        `Cost: ${r.cost === 0 ? 'Free' : '$'+r.cost.toLocaleString()}`,
+                                        `ROI: ${(r.score/r.cost).toFixed(3) || '∞'} pts/$`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ======================
+        // 5. IMPLEMENTATION ROADMAP
+        // ======================
+        function generateRoadmap() {
+            const timeline = document.getElementById('roadmap-timeline');
+            const now = new Date();
+            
+            // Generate synthetic deadlines if none exist
+            const rankedWithDeadlines = filteredRankings
+                .filter(r => r.score > 70)
+                .slice(0, 5)
+                .map(r => {
+                    if (!r.deadline) {
+                        const month = Math.floor(Math.random() * 6) + 1; // Jan-Jun
+                        r.deadline = new Date(now.getFullYear() + 1, month, 15).toISOString().split('T')[0];
+                    }
+                    return r;
+                })
+                .sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+            
+            timeline.innerHTML = rankedWithDeadlines.map(r => `
+                <div class="roadmap-milestone">
+                    <h4>${r.name}</h4>
+                    <p><strong>Deadline:</strong> ${formatDate(r.deadline)}</p>
+                    <p><strong>Preparation Time:</strong> ${r.cost === 0 ? '2-4 weeks' : '4-8 weeks'}</p>
+                    <p><strong>Key Requirements:</strong> ${r.requirements.join(', ')}</p>
+                    <p><strong>Estimated Impact:</strong> ${r.score} points</p>
+                </div>
+            `).join('');
+        }
+
+        async function exportRoadmap() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFontSize(18);
+                doc.setTextColor(44, 62, 80);
+                doc.text('Rankings Implementation Roadmap 2025', 105, 15, { align: 'center' });
+                
+                const now = new Date();
+                const rankedWithDeadlines = filteredRankings
+                    .filter(r => r.score > 70)
+                    .slice(0, 5)
+                    .sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+                
+                // Create Gantt chart data
+                const ganttData = rankedWithDeadlines.map(r => {
+                    const deadline = new Date(r.deadline);
+                    const startDate = new Date(deadline);
+                    startDate.setMonth(startDate.getMonth() - (r.cost === 0 ? 1 : 2));
+                    
+                    return {
+                        task: r.name,
+                        start: formatDate(startDate.toISOString().split('T')[0]),
+                        end: formatDate(r.deadline),
+                        duration: r.cost === 0 ? '1 month' : '2 months',
+                        requirements: r.requirements.join(', ')
+                    };
+                });
+                
+                // Add table
+                doc.autoTable({
+                    head: [['Ranking', 'Start Date', 'Deadline', 'Duration', 'Key Requirements']],
+                    body: ganttData.map(item => [item.task, item.start, item.end, item.duration, item.requirements]),
+                    headStyles: {
+                        fillColor: [44, 62, 80],
+                        textColor: [255, 255, 255]
+                    },
+                    startY: 25
+                });
+                
+                // Add simple Gantt visualization
+                doc.setFontSize(12);
+                doc.text('Timeline Overview:', 15, doc.lastAutoTable.finalY + 15);
+                
+                let yPos = doc.lastAutoTable.finalY + 25;
+                const startX = 20;
+                const endX = 180;
+                const monthWidth = (endX - startX) / 12;
+                
+                // Draw timeline
+                doc.setDrawColor(100);
+                doc.setLineWidth(0.5);
+                doc.line(startX, yPos, endX, yPos);
+                
+                // Add month markers
+                for (let i = 0; i < 12; i++) {
+                    const x = startX + (i * monthWidth);
+                    doc.line(x, yPos, x, yPos + 3);
+                    doc.text(new Date(now.getFullYear(), i, 1).toLocaleString('default', { month: 'short' }), x, yPos + 7);
+                }
+                
+                // Add bars for each ranking
+                yPos += 15;
+                ganttData.forEach((item, i) => {
+                    const startMonth = new Date(item.start).getMonth();
+                    const endMonth = new Date(item.end).getMonth();
+                    const duration = endMonth - startMonth + 1;
+                    
+                    doc.setFillColor(52 + (i * 20), 152, 219);
+                    doc.rect(startX + (startMonth * monthWidth), yPos + (i * 8), duration * monthWidth, 5, 'F');
+                    doc.text(item.task, endX + 5, yPos + (i * 8) + 4);
+                });
+                
+                doc.save('rankings-implementation-roadmap-2025.pdf');
+            } catch (error) {
+                console.error("Failed to export roadmap:", error);
+                alert("Failed to export roadmap. Please check console for details.");
+            }
+        }
+
+        // ======================
+        // 6. METHODOLOGY CUSTOMIZER
+        // ======================
+        function updateMethodologyWeights() {
+            // Update weight displays
+            teachingWValue.textContent = teachingWeight.value;
+            researchWValue.textContent = researchWeight.value;
+            employabilityWValue.textContent = employabilityWeight.value;
+            
+            // Recalculate scores with custom weights
+            updateTable();
+        }
+
+ 
+        // ======================
+        // 7. STUDENT RECRUITMENT MODE
+        // ======================
+        function updateRecruitmentAnalysis() {
+            const visaPriority = parseInt(document.getElementById('visa-priority').value);
+            const employmentPriority = parseInt(document.getElementById('employment-priority').value);
+            const costPriority = parseInt(document.getElementById('cost-priority').value);
+            
+            // Get selected regions
+            const selectedRegions = Array.from(document.querySelectorAll('input[name="target-region"]:checked')).map(el => el.value);
+            
+            // Score rankings for recruitment focus
+            const recruitmentRankings = rankingsData2025.map(r => {
+                let score = 0;
+                
+                // Visa success correlates with global rankings
+                if (r.scope === 'global') score += visaPriority * 0.8;
+                
+                // Employment outcomes
+                score += (r.employability * employmentPriority);
+                
+                // Cost sensitivity - prefer free or low-cost rankings
+                score += (1 - Math.min(1, r.cost / 10000)) * costPriority * 2;
+                
+                // Regional relevance
+                if (selectedRegions.length > 0) {
+                    if (r.scope === 'regional') {
+                        // Check if this regional ranking matches any selected region
+                        if (
+                            (selectedRegions.includes('asia') && r.name.includes('Asia')) ||
+                            (selectedRegions.includes('europe') && r.name.includes('Europe')) ||
+                            (selectedRegions.includes('africa') && r.name.includes('Africa')) ||
+                            (selectedRegions.includes('latin-america') && r.name.includes('Latin')) ||
+                            (selectedRegions.includes('north-america') && r.name.includes('North America')) ||
+                            (selectedRegions.includes('oceania') && r.name.includes('Oceania'))
+                        ) {
+                            score *= 1.5;
+                        }
+                    }
+                }
+                
+                return { ...r, recruitmentScore: Math.round(score) };
+            }).sort((a,b) => b.recruitmentScore - a.recruitmentScore);
+            
+            // Update chart
+            const ctx = document.getElementById('recruitmentChart').getContext('2d');
+            if (charts.recruitmentChart) charts.recruitmentChart.destroy();
+            
+            charts.recruitmentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: recruitmentRankings.slice(0, 5).map(r => r.name),
+                    datasets: [{
+                        label: 'Recruitment Score',
+                        data: recruitmentRankings.slice(0, 5).map(r => r.recruitmentScore),
+                        backgroundColor: '#9b59b6',
+                        borderColor: '#8e44ad',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Recruitment Score'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Ranking System'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Top Rankings for Student Recruitment'
+                        }
+                    }
+                }
+            });
+            
+            // Update recommendations
+            const recs = document.getElementById('recruitment-recommendations');
+            recs.innerHTML = `
+                <h3>Top Recommendations for Student Recruitment</h3>
+                <ol>
+                    ${recruitmentRankings.slice(0, 3).map(r => `
+                        <li><strong>${r.name}</strong> (Score: ${r.recruitmentScore})
+                            <ul>
+                                <li>${r.teaching >= 7 ? '✓ Strong teaching reputation' : 'Teaching focus could be improved'}</li>
+                                <li>${r.employability >= 7 ? '✓ Excellent employability metrics' : 'Employability data limited'}</li>
+                                <li>${r.cost === 0 ? '✓ Free participation' : 'Cost: $' + r.cost.toLocaleString()}</li>
+                                <li>${r.scope === 'global' ? 'Global recognition helps with visas' : 
+                                    r.scope === 'regional' ? 'Strong regional recognition' : 
+                                    'Specialized focus may appeal to specific students'}</li>
+                            </ul>
+                        </li>
+                    `).join('')}
+                </ol>
+                <div class="alert alert-info">
+                    <strong>Tip:</strong> Rankings with higher employability scores and global recognition tend to be most effective 
+                    for international student recruitment, especially when combined with regional rankings for targeted markets.
+                </div>
+            `;
+        }
+
+        // ======================
+        // 8. RESEARCH COLLABORATION FINDER
+        // ======================
+        function updateCollaborationFinder() {
+            // Identify rankings emphasizing collaboration
+            const collaborationRankings = rankingsData2025.filter(r => 
+                r.name.includes('Innovation') || 
+                r.publisher.includes('Nature') ||
+                r.methodology.includes('collaboration') ||
+                r.scope === 'sdg'
+            ).map(r => {
+                // Add synthetic collaboration metrics
+                r.collabMetrics = {
+                    international: Math.floor(Math.random() * 30) + 70, // 70-100%
+                    industry: Math.floor(Math.random() * 5) + 1, // 1-5 stars
+                    interdisc: Math.floor(Math.random() * 30) + 70,
+                    openness: Math.floor(Math.random() * 30) + 70
+                };
+                return r;
+            }).sort((a,b) => b.collabMetrics.international - a.collabMetrics.international);
+            
+            // Update chart
+            const ctx = document.getElementById('collaborationChart').getContext('2d');
+            if (charts.collaborationChart) charts.collaborationChart.destroy();
+            
+            charts.collaborationChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['International %', 'Industry Links', 'Interdisciplinary', 'Open Access'],
+                    datasets: collaborationRankings.slice(0, 3).map(r => ({
+                        label: r.name,
+                        data: [
+                            r.collabMetrics.international,
+                            r.collabMetrics.industry * 20,
+                            r.collabMetrics.interdisc,
+                            r.collabMetrics.openness
+                        ],
+                        borderColor: getRandomColor(),
+                        backgroundColor: 'rgba(0,0,0,0.1)',
+                        fill: true,
+                        pointBackgroundColor: getRandomColor()
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Research Collaboration Focus Areas'
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+            
+            // Update table
+            const table = document.getElementById('collaboration-table').querySelector('tbody');
+            table.innerHTML = collaborationRankings.map(r => `
+                <tr>
+                    <td>${r.name}</td>
+                    <td>${r.scope === 'sdg' ? 'SDG Partnerships' : 
+                        r.name.includes('Innovation') ? 'Industry Innovation' : 
+                        r.publisher.includes('Nature') ? 'International Co-Authorship' : 'General Collaboration'}</td>
+                    <td>${r.collabMetrics.international}%</td>
+                    <td>${'★'.repeat(r.collabMetrics.industry)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ======================
+        // 9. PREDICTIVE ANALYSIS MODULE
+        // ======================
+        function updatePredictiveAnalysis() {
+            // Simulate AI predictions
+            const currentRank = Math.floor(Math.random() * 200) + 50;
+            const optimisticRank = Math.max(1, currentRank - 20 - Math.floor(Math.random() * 30));
+            const neutralRank = currentRank + Math.floor(Math.random() * 10) - 5;
+            const pessimisticRank = currentRank + 20 + Math.floor(Math.random() * 30);
+            
+            predictiveResults.innerHTML = `
+                <p><strong>Current Position:</strong> ~${currentRank}</p>
+                <p><strong>2025 Projection:</strong> ${neutralRank} (${neutralRank < currentRank ? 'Improvement' : 'Decline'})</p>
+                <p><strong>Confidence:</strong> ${Math.floor(Math.random() * 30) + 65}%</p>
+                <div class="alert alert-info">
+                    Based on your current trajectory and peer benchmarks, we project moderate improvement 
+                    if current strategies are maintained.
+                </div>
+            `;
+            
+            // Initialize 3D visualization
+            init3DPredictiveVisualization();
+        }
+        
+        function init3DPredictiveVisualization() {
+            const chartDom = document.getElementById('3d-viz-container');
+            const myChart = echarts.init(chartDom);
+            echartsInstances.push(myChart);
+            
+            const option = {
+                tooltip: {},
+                backgroundColor: currentTheme === 'dark' ? '#1a1a2e' : '#f9f9f9',
+                visualMap: {
+                    show: false,
+                    dimension: 2,
+                    min: 0,
+                    max: 100,
+                    inRange: {
+                        color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+                    }
+                },
+                xAxis3D: { 
+                    type: 'value', 
+                    name: 'Teaching',
+                    nameTextStyle: {
+                        color: currentTheme === 'dark' ? '#f0f0f0' : '#333'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: currentTheme === 'dark' ? '#f0f0f0' : '#333'
+                        }
+                    }
+                },
+                yAxis3D: { 
+                    type: 'value', 
+                    name: 'Research',
+                    nameTextStyle: {
+                        color: currentTheme === 'dark' ? '#f0f0f0' : '#333'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: currentTheme === 'dark' ? '#f0f0f0' : '#333'
+                        }
+                    }
+                },
+                zAxis3D: { 
+                    type: 'value', 
+                    name: 'Employability',
+                    nameTextStyle: {
+                        color: currentTheme === 'dark' ? '#f0f0f0' : '#333'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: currentTheme === 'dark' ? '#f0f0f0' : '#333'
+                        }
+                    }
+                },
+                grid3D: { 
+                    viewControl: { 
+                        autoRotate: true,
+                        autoRotateSpeed: 10
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: currentTheme === 'dark' ? '#f0f0f0' : '#333'
+                        }
+                    },
+                    axisPointer: {
+                        lineStyle: {
+                            color: currentTheme === 'dark' ? '#f0f0f0' : '#333'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'scatter3D',
+                    data: filteredRankings.slice(0, 10).map(r => [
+                        r.teaching,
+                        r.research,
+                        r.employability,
+                        r.name
+                    ]),
+                    symbolSize: 12,
+                    itemStyle: {
+                        borderWidth: 1,
+                        borderColor: currentTheme === 'dark' ? '#1a1a2e' : '#f9f9f9'
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: '#f1c40f'
+                        }
+                    }
+                }]
+            };
+            
+            myChart.setOption(option);
+            
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+        }
+        
+        function runScenario(type) {
+            let scenarioText = '';
+            let scenarioClass = '';
+            let projection = '';
+            
+            switch(type) {
+                case 'optimistic':
+                    projection = Math.floor(Math.random() * 30) + 1;
+                    scenarioText = `With increased investment in research and strategic partnerships, we project your institution could rise ${projection} positions in the next 2 years.`;
+                    scenarioClass = 'alert-success';
+                    break;
+                case 'neutral':
+                    projection = Math.floor(Math.random() * 10) - 5;
+                    if (projection > 0) {
+                        scenarioText = `Maintaining current strategies would likely result in a modest gain of ${projection} positions.`;
+                    } else if (projection < 0) {
+                        scenarioText = `Maintaining current strategies may result in a slight decline of ${Math.abs(projection)} positions as competitors improve.`;
+                    } else {
+                        scenarioText = `Maintaining current strategies would likely keep your institution at about the same ranking position.`;
+                    }
+                    scenarioClass = 'alert-info';
+                    break;
+                case 'pessimistic':
+                    projection = Math.floor(Math.random() * 20) + 10;
+                    scenarioText = `Without additional investment or strategic changes, your institution could decline ${projection} positions as competitors advance.`;
+                    scenarioClass = 'alert-danger';
+                    break;
+            }
+            
+            scenarioResults.innerHTML = `
+                <div class="alert ${scenarioClass}">
+                    <h4>${type.charAt(0).toUpperCase() + type.slice(1)} Scenario Results</h4>
+                    <p>${scenarioText}</p>
+                    <p><strong>Key Recommendations:</strong> ${getScenarioRecommendations(type)}</p>
+                </div>
+            `;
+        }
+        
+        function getScenarioRecommendations(type) {
+            const recommendations = {
+                optimistic: [
+                    "Increase research funding by 15-20%",
+                    "Develop 3-5 new international partnerships",
+                    "Enhance graduate employability programs",
+                    "Participate in 2 additional strategic rankings"
+                ],
+                neutral: [
+                    "Maintain current research investment levels",
+                    "Focus on improving existing partnerships",
+                    "Monitor competitor movements closely",
+                    "Selectively participate in high-ROI rankings"
+                ],
+                pessimistic: [
+                    "Conduct a comprehensive rankings strategy review",
+                    "Identify and address key weaknesses",
+                    "Consider reallocating resources to highest-impact areas",
+                    "Develop a 3-year improvement plan"
+                ]
+            };
+            
+            return recommendations[type].map(r => `<li>${r}</li>`).join('');
+        }
+
+        // ======================
+        // 10. AI RECOMMENDATION ENGINE
+        // ======================
+        function updateAIRecommendation() {
+            const teachingPriority = parseInt(teachingSlider.value);
+            const researchPriority = parseInt(researchSlider.value);
+            const employabilityPriority = parseInt(employabilitySlider.value);
+            const region = regionSelect.value;
+            const budget = parseInt(budgetSelect.value);
+            
+            // Determine focus area
+            let focus = '';
+            if (teachingPriority > researchPriority && teachingPriority > employabilityPriority) {
+                focus = 'teaching excellence';
+            } else if (researchPriority > teachingPriority && researchPriority > employabilityPriority) {
+                focus = 'research impact';
+            } else {
+                focus = 'graduate employability';
+            }
+            
+            // Determine budget level
+            let budgetLevel = '';
+            if (budget >= 50000) budgetLevel = 'substantial';
+            else if (budget >= 10000) budgetLevel = 'moderate';
+            else budgetLevel = 'limited';
+            
+            // Generate recommendation text
+            let recommendation = `Based on your institution's profile with a ${focus} focus and ${budgetLevel} rankings budget, `;
+            
+            if (region !== 'global') {
+                recommendation += `and your regional focus on ${region}, `;
+            }
+            
+            recommendation += `we recommend prioritizing rankings that balance your key priorities while maximizing visibility. `;
+            
+            if (budget < 10000) {
+                recommendation += `Given your limited budget, focus on free rankings and select paid ones with the highest ROI.`;
+            } else {
+                recommendation += `Your budget allows for participation in several key rankings - focus on those with the best strategic fit.`;
+            }
+            
+            // Update the AI recommendation display
+            aiRecommendationText.textContent = recommendation;
+            
+            // Update confidence score (simulated)
+            const confidenceElement = document.querySelector('.ai-recommendation .confidence');
+            if (confidenceElement) {
+                confidenceElement.textContent = `Confidence: ${Math.floor(Math.random() * 15) + 80}%`;
+            }
+        }
+
+        // ======================
+        // 11. THEME MANAGEMENT
+        // ======================
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(currentTheme);
+        }
+        
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            themeToggle.textContent = theme === 'light' ? 'Toggle Dark Mode' : 'Toggle Light Mode';
+            
+            // Re-render visualizations with new theme
+            if (charts.peerChart) charts.peerChart.update();
+            if (charts.participationChart) charts.participationChart.update();
+            if (charts.trendChart) charts.trendChart.update();
+            if (charts.roiChart) charts.roiChart.update();
+            if (charts.recruitmentChart) charts.recruitmentChart.update();
+            if (charts.collaborationChart) charts.collaborationChart.update();
+            
+            // Update ECharts instances
+            echartsInstances.forEach(chart => {
+                chart.dispose();
+            });
+            echartsInstances = [];
+            
+            // Reinitialize charts if their tabs are active
+            const activeTab = document.querySelector('.module-tab.active').dataset.tab;
+            if (activeTab === 'benchmarking') {
+                initPeerComparisonChart();
+            } else if (activeTab === 'predictive') {
+                init3DPredictiveVisualization();
+            }
+            
+            // Update SVG visualization
+            updateVisualization(filteredRankings.slice(0, 5));
+        }
+
+ 
+ 
+ 
+         // ======================
+        // 12. PRINT FUNCTIONALITY
+        // ======================
+        function printTab(tabId) {
+            const printContents = document.getElementById(tabId).innerHTML;
+            const originalContents = document.body.innerHTML;
+            
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Global Rankings Navigator - ${document.querySelector(`.module-tab[data-tab="${tabId.replace('-content', '')}"]`).textContent}</title>
+                    <style>
+                        @media print {
+                            .no-print { display: none !important; }
+                            button { display: none !important; }
+                        }
+                        body { 
+                            padding: 20px; 
+                            font-family: Arial, sans-serif;
+                        }
+                        h1 {
+                            color: #2c3e50;
+                            margin-bottom: 20px;
+                        }
+                        button {
+                            padding: 10px 15px;
+                            margin: 10px;
+                            background: #3498db;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Global Rankings Navigator - ${document.querySelector(`.module-tab[data-tab="${tabId.replace('-content', '')}"]`).textContent}</h1>
+                    ${printContents}
+                    <div class="no-print" style="text-align:center;margin-top:20px;">
+                        <button onclick="window.print()">Print</button>
+                        <button onclick="window.close()">Close</button>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.focus();
+            
+            // Auto-print if needed (can be blocked by popup blockers)
+            // printWindow.print();
+        }
+
+        // ======================
+        // HELPER FUNCTIONS
+        // ======================
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+
+
